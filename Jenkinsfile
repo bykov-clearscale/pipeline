@@ -47,8 +47,8 @@ environment {
         }
         stage('upload logs') {
         	steps {
-        		s3Upload(bucket:"${S3_BUCKET}", path:"${params.project_name}/${BUILD_ID}/${params.project_name}-tfplan-${BUILD_ID}.json", file:"${params.project_name}-tfplan-${BUILD_ID}.json")
-        		s3Upload(bucket:"${S3_BUCKET}", path:"${params.project_name}/${BUILD_ID}/terraform.log", file:"terraform.log")
+        		s3Upload(bucket:"${S3_BUCKET}", path:"${params.project_name}/${BUILD_ID}/${params.project_name}-tfplan-${BUILD_ID}.json", file:"$TERRAFORM_CONFIGS/${params.project_name}-tfplan-${BUILD_ID}.json")
+        		s3Upload(bucket:"${S3_BUCKET}", path:"${params.project_name}/${BUILD_ID}/terraform.log", file:"$TERRAFORM_CONFIGS/terraform.log")
         	}
         }
         stage('verify') {
