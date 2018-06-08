@@ -39,7 +39,7 @@ environment {
         stage('plan') {
             steps {
                 sh  """
-                    ${TERRAFORM_CMD} plan -out=${params.project_name}-tfplan-${params.build_id}.json -input=false -parallelism=50
+                    ${TERRAFORM_CMD} plan -out=${params.project_name}-tfplan-${BUILD_ID}.json -input=false -parallelism=50
                     """
             }
         }
