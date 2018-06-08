@@ -5,7 +5,7 @@ pipeline {
         }
     }
 environment {
-        TERRAFORM_CMD = 'docker run --network host -w /app -v ${HOME}/.aws:/root/.aws -v ${HOME}/.ssh:/root/.ssh -v `pwd`:/app hashicorp/terraform:light'
+        TERRAFORM_CMD = 'docker run --network host -w /app -v ${HOME}/.aws:/root/.aws -v ${HOME}/.ssh:/root/.ssh -v `pwd`/terraform:/app hashicorp/terraform:light'
     }
     stages {
         stage('checkout repo') {
@@ -33,7 +33,7 @@ environment {
                     ${TERRAFORM_CMD} plan -out=tfplan -input=false 
                     """
                 script {
-                  timeout(time: 10, unit: 'MINUTES') {
+                  timeout(time: 10, unit: 'MINUTES') {	
                     input(id: "Deploy Gate", message: "Deploy ${params.project_name}?", ok: 'Deploy')
                   }
                 }
