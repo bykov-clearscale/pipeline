@@ -39,7 +39,7 @@ environment {
         stage('plan') {
             steps {
                 sh  """
-                    ${TERRAFORM_CMD} plan -out=tfplan.json -input=false -parallelism=50
+                    ${TERRAFORM_CMD} plan -out=${params.project_name}-tfplan-${params.build_id}.json -input=false -parallelism=50
                     """
                 script {
                   timeout(time: 10, unit: 'MINUTES') {	
@@ -51,16 +51,9 @@ environment {
         stage('verify') {
         	steps {
         		sh """
-        		   
+        		   ${TFLINT_CMD} ${TERRAFORM_CONFIGS}/
         		   """
         	}
-        }
-        stage('apply') {
-            steps {
-                sh  """
-                    ${TERRAFORM_CMD} apply -lock=false -input=false tfplan.json -parallelism=50
-                    """
-			}
         }
     }
 }
