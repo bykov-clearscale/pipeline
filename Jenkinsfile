@@ -41,11 +41,6 @@ environment {
                 sh  """
                     ${TERRAFORM_CMD} plan -out=${params.project_name}-tfplan-${params.build_id}.json -input=false -parallelism=50
                     """
-                script {
-                  timeout(time: 10, unit: 'MINUTES') {	
-                    input(id: "Deploy Gate", message: "Deploy ${params.project_name}?", ok: 'Deploy')
-                  }
-                }
             }
         }
         stage('verify') {
@@ -53,6 +48,11 @@ environment {
         		sh """
         		   ${TFLINT_CMD} ${TERRAFORM_CONFIGS}/
         		   """
+                script {
+                  timeout(time: 10, unit: 'MINUTES') {	
+                    input(id: "Deploy Gate", message: "Deploy ${params.project_name}?", ok: 'Deploy')
+                  }
+                }
         	}
         }
     }
