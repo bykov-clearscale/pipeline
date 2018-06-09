@@ -5,9 +5,9 @@ pipeline {
         }
     }
 environment {
-		TERRAFORM_CONFIGS="terraform"
-        TERRAFORM_CMD = 'docker run --network host -w /app -v ${HOME}/.aws:/root/.aws -v ${HOME}/.ssh:/root/.ssh -v $(pwd)/$TERRAFORM_CONFIGS:/app -e TF_LOG=INFO -e TF_LOG_PATH=terraform.log hashicorp/terraform:light'
-        TFLINT_CMD = 'docker run --rm -v $(pwd)/$TERRAFORM_CONFIGS:/data -t wata727/tflint'
+		TERRAFORM_VERSION="0.11.7"
+        TERRAFORM_CMD = 'docker run --network host -w /app -v ${HOME}/.aws:/root/.aws -v ${HOME}/.ssh:/root/.ssh -v $(pwd)/${params.terraform_path}:/app -e TF_LOG=INFO -e TF_LOG_PATH=terraform.log hashicorp/terraform:$TERRAFORM_VERSION'
+        TFLINT_CMD = 'docker run --rm -v $(pwd)/${params.terraform_path}:/data -t wata727/tflint'
         AWS_REGION = "us-west-2"
         S3_BUCKET = "revinate-terraform-logs"
     }
@@ -20,7 +20,7 @@ environment {
         stage('pull latest light terraform image') {
             steps {
                 sh  """
-                    docker pull hashicorp/terraform:light
+                    docker pull hashicorp/terraform:$TERRAFORM_VERSION
                     """
             }
         }
@@ -31,7 +31,7 @@ environment {
                     """
             }
         }
-        stage('workspace') {
+        stage('select workspace') {
         	steps {
         		sh """
         		   ${TERRAFORM_CMD} workspace select ${params.env}
@@ -45,12 +45,6 @@ environment {
                     """
             }
         }
-        stage('upload logs') {
-        	steps {
-        		s3Upload(bucket:"${S3_BUCKET}", path:"${params.project_name}/${BUILD_ID}/${params.project_name}-tfplan-${BUILD_ID}.json", file:"$TERRAFORM_CONFIGS/${params.project_name}-tfplan-${BUILD_ID}.json")
-        		s3Upload(bucket:"${S3_BUCKET}", path:"${params.project_name}/${BUILD_ID}/terraform.log", file:"$TERRAFORM_CONFIGS/terraform.log")
-        	}
-        }
         stage('verify') {
         	steps {
         		sh """
@@ -61,6 +55,19 @@ environment {
                     input(id: "Deploy Gate", message: "Deploy ${params.project_name}?", ok: 'Deploy')
                   }
                 }
+        	}
+        }
+        stage('apply') {
+            steps {
+                sh  """
+                    ${TERRAFORM_CMD} apply -lock=false -input=false ${params.project_name}-tfplan-${BUILD_ID}.json
+                    """
+			}
+        }
+        stage('upload logs') {
+        	steps {
+        		s3Upload(bucket:"${S3_BUCKET}", path:"${params.project_name}/${BUILD_ID}/${params.project_name}-tfplan-${BUILD_ID}.json", file:"${params.terraform_path}/${params.project_name}-tfplan-${BUILD_ID}.json")
+        		s3Upload(bucket:"${S3_BUCKET}", path:"${params.project_name}/${BUILD_ID}/terraform.log", file:"${params.terraform_path}/terraform.log")
         	}
         }
     }
