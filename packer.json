@@ -26,8 +26,6 @@
       "associate_public_ip_address": true,
       "ami_name": "base-rabbit-{{isotime \"2006-01-02-15-04-05\"}}",
       "ami_description": "test-pipeline",
-      "spot_price" : 0,
-      "spot_price_auto_product": "Linux/UNIX (Amazon VPC)",
       "tags": {
         "Name": "Packer: base-test"
       }
