@@ -1,12 +1,7 @@
 pipeline {
-    agent {
-        node {
-            label 'master'
-        }
-    }
 environment {
         PACKER_VERSION="1.2.4"
-        PACKER_CMD = 'docker run --rm hashicorp/packer:$PACKER_VERSION'
+        PACKER_CMD = 'docker run --rm -v ${HOME}/.aws:/root/.aws hashicorp/packer:$PACKER_VERSION'
     }
     stages {
         stage('checkout repo') {
@@ -22,7 +17,7 @@ environment {
         }
         stage('Build') {
           steps {
-            AMI=sh(returnStdout: true, "packer build -var 'vpc_id=${params.vpc_id}' -var 'subnet_id={params.subnet_id}' ${params.packer_file}")
+            AMI=sh(returnStdout: true, "$PACKER_CMD build -var 'vpc_id=${params.vpc_id}' -var 'subnet_id={params.subnet_id}' ${params.packer_file}")
             echo $AMI
           }
         }
