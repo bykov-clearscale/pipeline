@@ -23,8 +23,14 @@ environment {
         stage('Build') {
           steps {
             sh "$PACKER_CMD build -var 'vpc_id=${params.vpc_id}' -var 'subnet_id=${params.subnet_id}' /opt/${params.packer_file} > build_log" 
+            sh "tail -3 build_log | head -2 | awk 'match($0, /ami-.*/) { print substr($0, RSTART, RLENGTH) }' > ami_id"
           }
         }
         
+    }
+    post {
+        success {
+            archiveArtifacts artifacts: 'ami_id', fingerprint: true
+        }
     }
 }
