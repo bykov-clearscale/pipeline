@@ -25,7 +25,7 @@ environment {
             sh """
                $PACKER_CMD build -var 'vpc_id=${params.vpc_id}' -var 'subnet_id=${params.subnet_id}' /opt/${params.packer_file} > build_log" 
                tail -3 build_log | head -2 | awk 'match($0, /ami-.*/) { print substr($0, RSTART, RLENGTH) }' > ami_id"
-            """
+              """
           }
         }
         
