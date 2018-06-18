@@ -17,12 +17,12 @@ environment {
         stage('Validate') {
           steps {
             print "Running packer validate on : ${params.packer_file}"
-            sh "packer -v ; packer validate ${packer_file}"
+            sh "$PACKER_CMD -v ; $PACKER_CMD validate ${packer_file}"
           }
         }
         stage('Build') {
           steps {
-            AMI=sh(returnStdout: true, "packer build -var 'vpc_id=${params.vpc_id}' -var 'subnet_id={params.subnet_id}' packer.json")
+            AMI=sh(returnStdout: true, "packer build -var 'vpc_id=${params.vpc_id}' -var 'subnet_id={params.subnet_id}' ${params.packer_file}")
             echo $AMI
           }
         }

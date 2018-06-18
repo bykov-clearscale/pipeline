@@ -1,0 +1,80 @@
+{
+    "variables": {
+        "aws_access_key": "",
+        "aws_secret_key": ""
+    },
+    "builders": [    {
+      "type": "amazon-ebs",
+      "access_key": "{{user `aws_access_key`}}",
+      "secret_key": "{{user `aws_secret_key`}}",
+      "region": "{{user `aws_region`}}",
+      "vpc_id": "{{user `vpc_id`}}",
+      "subnet_id": "{{user `subnet_id`}}",
+      "source_ami_filter": {
+        "filters": {
+          "virtualization-type": "hvm",
+          "name": "ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-amd64-server-*",
+          "root-device-type": "ebs"
+        },
+        "owners": ["099720109477"],
+        "most_recent": true
+      },
+      "instance_type": "t2.medium",
+      "ssh_username": "ubuntu",
+      "ssh_timeout": "10m",
+      "ssh_pty": true,
+      "associate_public_ip_address": true,
+      "ami_name": "base-rabbit-{{isotime \"2006-01-02-15-04-05\"}}",
+      "ami_description": "Custom base AMI for RabbitMQ nodes",
+      "spot_price" : 0,
+      "spot_price_auto_product": "Linux/UNIX (Amazon VPC)",
+      "run_tags": {
+        "Name": "Packer: base-rabbit"
+      },
+      "tags": {
+        "Name": "Packer: base-rabbit"
+      }
+    }],
+    "provisioners": [{
+        "type": "shell",
+        "inline": ["sleep 10"]
+    }, {
+        "type": "shell",
+        "inline": [
+            "sudo apt-add-repository ppa:ansible/ansible -y",
+            "sudo apt-get update",
+            "sudo apt-get install -y ansible",
+            "mkdir -p /tmp/ansible"
+        ]
+    }, {
+      "type": "file",
+      "source": "ansible/library",
+      "destination": "/tmp/ansible"
+    }, {
+      "type": "file",
+      "source": "ansible.cfg",
+      "destination": "/tmp/ansible/ansible.cfg"
+    }, {
+      "type": "shell",
+      "inline": [
+        "sudo mv /tmp/ansible/ansible.cfg /etc/ansible/ansible.cfg"
+      ]
+    }, {
+        "type": "ansible-local",
+        "playbook_file": "ansible/ami-playbook.yml",
+        "role_paths": [
+            "ansible/roles/"
+        ],
+        "playbook_dir": "ansible",
+        "staging_directory": "/tmp/ansible",
+        "clean_staging_directory": true,
+        "extra_arguments": ""
+    }],
+   "post-processors": [
+    {
+      "type": "manifest",
+      "output": "manifest.json",
+      "strip_path": true
+    }
+  ]
+}
