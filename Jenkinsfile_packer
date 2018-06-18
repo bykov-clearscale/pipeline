@@ -6,7 +6,7 @@ pipeline {
     }
 environment {
         PACKER_VERSION="1.2.4"
-        PACKER_CMD = 'docker run --rm -v ${HOME}/.aws:/root/.aws hashicorp/packer:$PACKER_VERSION'
+        PACKER_CMD = 'docker run --rm -v ${HOME}/.aws:/root/.aws -v ${pwd}:/tmp/ hashicorp/packer:$PACKER_VERSION'
     }
     stages {
         stage('checkout repo') {
@@ -17,12 +17,12 @@ environment {
         stage('Validate') {
           steps {
             print "Running packer validate on : ${params.packer_file}"
-            sh "$PACKER_CMD -v ; $PACKER_CMD validate ${packer_file}"
+            sh "$PACKER_CMD -v ; $PACKER_CMD validate /tmp/${packer_file}"
           }
         }
         stage('Build') {
           steps {
-            sh "$PACKER_CMD build -var 'vpc_id=${params.vpc_id}' -var 'subnet_id={params.subnet_id}' ${params.packer_file} | grep -i ami" 
+            sh "$PACKER_CMD build -var 'vpc_id=${params.vpc_id}' -var 'subnet_id={params.subnet_id}' /tmp/${params.packer_file} | grep -i ami" 
           }
         }
         
