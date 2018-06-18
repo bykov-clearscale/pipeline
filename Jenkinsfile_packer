@@ -1,4 +1,9 @@
 pipeline {
+    agent {
+        node {
+            label 'master'
+        }
+    }
 environment {
         PACKER_VERSION="1.2.4"
         PACKER_CMD = 'docker run --rm -v ${HOME}/.aws:/root/.aws hashicorp/packer:$PACKER_VERSION'
