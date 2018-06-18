@@ -17,7 +17,9 @@ environment {
         }
         stage('Build') {
           steps {
-            sh(returnStdout: true, "$PACKER_CMD build -var 'vpc_id=${params.vpc_id}' -var 'subnet_id={params.subnet_id}' ${params.packer_file}")
+            sh "$PACKER_CMD build -var 'vpc_id=${params.vpc_id}' -var 'subnet_id={params.subnet_id}' ${params.packer_file} > result" 
+            def output=readFile('result').trim()
+            echo "output=$output";
           }
         }
         
