@@ -7,8 +7,6 @@ pipeline {
 environment {
         ANSIBLE_INVENTORY="/etc/ansible/ec2.py"
         EC2_INI_PATH="/etc/ansible/ec2.ini"
-        ANSIBLE_EC2_PEM_FILE="${params.ssh_key}"
-        ANSIBLE_REMOTE_USER="${params.username}"
     }
     stages {
         stage('checkout repo') {
@@ -30,7 +28,7 @@ environment {
         stage('Run playbook') {
           steps {
             sh """
-               ansible-playbook ${params.playbook} -vvvvv > ansible_log
+               ansible-playbook ${params.playbook} -u ${params.username} --private-key ${params.ssh_key} > ansible_log
             """
           }
         }
