@@ -12,9 +12,14 @@ environment {
     }
     stages {
         stage('checkout repo') {
-            steps {
-              checkout scm
-            }
+          steps {
+            checkout scm
+          }
+        }
+        stage('Refresh Cache') {
+          steps {
+            sh "$ANSIBLE_INVENTORY --refresh-cache"
+          }
         }
         stage('Validate') {
           steps {
