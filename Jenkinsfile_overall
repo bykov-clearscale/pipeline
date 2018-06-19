@@ -4,29 +4,31 @@ pipeline {
             label 'master'
         }
     }
-stage('packer') {
-  steps {
-    build '${params.packer_job}'  
-    script {
-	  timeout(time: 10, unit: 'MINUTES') {  
-	    input(id: "Deploy Gate", message: "Run terraform ${params.terraform_job}?", ok: 'Terraform')
-	  }
-	}
-  }
-}
-stage('terraform') {
-  steps {
-    build '${params.terraform_job}'  
-    script {
-	  timeout(time: 10, unit: 'MINUTES') {  
-	    input(id: "Deploy Gate", message: "Run ansible job ${params.ansible_job}?", ok: 'Ansible')
-	  }
-	}
-  }
-}
-stage('ansible') {
-  steps {
-    build '${params.ansible_job}'  
-  }
-}
+    stages {
+    	stage('packer') {
+  			steps {
+    			build '${params.packer_job}'  
+    			script {
+	  				timeout(time: 10, unit: 'MINUTES') {  
+	    				input(id: "Deploy Gate", message: "Run terraform ${params.terraform_job}?", ok: 'Terraform')
+	  				}
+				}
+  			}
+		}
+		stage('terraform') {
+  			steps {
+    			build '${params.terraform_job}'  
+    			script {
+	  				timeout(time: 10, unit: 'MINUTES') {  
+	    				input(id: "Deploy Gate", message: "Run ansible job ${params.ansible_job}?", ok: 'Ansible')
+	  				}
+				}
+  			}
+		}
+		stage('ansible') {
+  			steps {
+    			build '${params.ansible_job}'  
+  			}
+		}
+    }
 }
