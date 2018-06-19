@@ -1,3 +1,9 @@
+pipeline {
+    agent {
+        node {
+            label 'master'
+        }
+    }
 stage('packer') {
   steps {
     build '${params.packer_job}'  
@@ -22,4 +28,5 @@ stage('ansible') {
   steps {
     build '${params.ansible_job}'  
   }
+}
 }
