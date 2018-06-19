@@ -24,13 +24,13 @@ environment {
         stage('Validate') {
           steps {
             print "Checking syntax of the playbook ${params.playbook}"
-            sh "ansible-playbook ${params.playbook} --syntax-check -vvvvv"
+            sh "ansible-playbook ${params.playbook} --syntax-check"
           }
         }
         stage('Run playbook') {
           steps {
             sh """
-               ansible-playbook ${params.playbook} > ansible_log
+               ansible-playbook ${params.playbook} -vvvvv > ansible_log
             """
           }
         }
