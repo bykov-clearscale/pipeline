@@ -28,7 +28,7 @@ environment {
         stage('Run playbook') {
           steps {
             sh """
-               ansible-playbook ${params.playbook} -u ${params.username} --private-key ${params.ssh_key} > ansible_log
+               ansible-playbook ${params.playbook} -u ${params.username} --private-key ${params.ssh_key}
             """
           }
         }       
