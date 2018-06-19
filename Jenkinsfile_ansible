@@ -31,12 +31,6 @@ environment {
                ansible-playbook ${params.playbook} -u ${params.username} --private-key ${params.ssh_key} > ansible_log
             """
           }
-        }
-        stage('logs') {
-            steps {
-               s3Upload(bucket:"${S3_BUCKET}", path:"${params.project_name}/ansible/${BUILD_ID}/ansible_log", file:"ansible_log")
-            }
-        }
-        
+        }       
     }
 }
