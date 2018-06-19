@@ -18,13 +18,13 @@ environment {
         }
         stage('Refresh Cache') {
           steps {
-            sh "$ANSIBLE_INVENTORY --refresh-cache"
+            sh "$ANSIBLE_INVENTORY --refresh-cache > /dev/null"
           }
         }
         stage('Validate') {
           steps {
             print "Checking syntax of the playbook ${params.playbook}"
-            sh "ansible-playbook ${params.playbook} --syntax-check"
+            sh "ansible-playbook ${params.playbook} --syntax-check -vvvvv"
           }
         }
         stage('Run playbook') {
