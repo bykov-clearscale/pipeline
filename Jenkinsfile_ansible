@@ -5,7 +5,7 @@ pipeline {
         }
     }
 environment {
-        ANSIBLE_HOSTS="/etc/ansible/ec2.py"
+        ANSIBLE_INVENTORY="/etc/ansible/ec2.py"
         EC2_INI_PATH="/etc/ansible/ec2.ini"
         ANSIBLE_EC2_PEM_FILE="${params.ssh_key}"
         ANSIBLE_REMOTE_USER="${params.username}"
