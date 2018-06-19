@@ -7,7 +7,11 @@ pipeline {
     stages {
     	stage('packer') {
   			steps {
-    			build '${params.packer_job}'  
+  				build(job: "${params.packer_job}", parameters: [
+  					[$class: 'StringParameterValue', name: 'packer_file', value: "${params.packer_file}" ],
+  					[$class: 'StringParameterValue', name: 'vpc_id', value: "${params.vpc_id}" ],
+  					[$class: 'StringParameterValue', name: 'subnet_id', value: "${params.subnet_id}" ]
+  					])
     			script {
 	  				timeout(time: 10, unit: 'MINUTES') {  
 	    				input(id: "Deploy Gate", message: "Run terraform ${params.terraform_job}?", ok: 'Terraform')
