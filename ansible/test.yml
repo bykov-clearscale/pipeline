@@ -1,0 +1,13 @@
+---
+- name: test | hosts selected.
+  hosts: tag_AnsibleRole_placeholder
+  gather_facts: no
+  tasks:
+    - group_by:
+        key: nodes
+
+- name: "test"
+  hosts: nodes
+  become: true
+  roles:
+    - role: test
