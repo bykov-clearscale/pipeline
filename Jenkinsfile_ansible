@@ -32,6 +32,11 @@ environment {
             """
           }
         }
+        stage('logs') {
+            steps {
+               s3Upload(bucket:"${S3_BUCKET}", path:"${params.project_name}/ansible/${BUILD_ID}/ansible_log", file:"ansible_log")
+            }
+        }
         
     }
 }
