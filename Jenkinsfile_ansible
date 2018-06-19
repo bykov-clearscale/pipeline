@@ -1,0 +1,34 @@
+pipeline {
+    agent {
+        node {
+            label 'master'
+        }
+    }
+environment {
+        ANSIBLE_HOSTS=/etc/ansible/ec2.py
+        EC2_INI_PATH=/etc/ansible/ec2.ini
+        ANSIBLE_EC2_PEM_FILE=${params.ssh_key}
+        ANSIBLE_REMOTE_USER=${params.username}
+    }
+    stages {
+        stage('checkout repo') {
+            steps {
+              checkout scm
+            }
+        }
+        stage('Validate') {
+          steps {
+            print "Checking syntax of the playbook ${params.playbook}"
+            sh "ansible-playbook ${params.playbook} --syntax-check"
+          }
+        }
+        stage('Run playbook') {
+          steps {
+            sh """
+               ansible-playbook ${params.playbook} > ansible_log
+            """
+          }
+        }
+        
+    }
+}
