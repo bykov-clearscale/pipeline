@@ -18,3 +18,8 @@ stage('terraform') {
 	}
   }
 }
+stage('ansible') {
+  steps {
+    build '${params.ansible_job}'  
+  }
+}
